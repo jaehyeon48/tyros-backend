@@ -27,7 +27,7 @@ async function loginController(req, res) {
       user: { id: userRow[0]['user_id'] }
     };
 
-    jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12' }, (err, token) => { // set expiresIn 12h for testing purpose.
+    jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
       if (err) throw err;
       res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).send('Login success.');
     });
@@ -63,7 +63,7 @@ async function signUpController(req, res) {
       user: { id: userIdRow[0]['user_id'] }
     };
 
-    jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12' }, (err, token) => { // set expiresIn 12h for testing purpose.
+    jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
       if (err) throw err;
       res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).send('User successfully created.');
     });
