@@ -23,7 +23,18 @@ async function signUpController(req, res) {
        VALUES ('${firstName}', '${lastName}', '${email}', '${encryptedPassword}')`
     );
 
-    return res.json('User successfully created!');
+    const [userIdRow] = await pool.query(`SELECT user_id FROM users WHERE email = '${email}'`);
+
+    const newUserId = userIdRow[0]['user_id'];
+
+    const jwtPayload = {
+      user: { id: newUserId }
+    };
+
+    jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12' }, (err, token) => { // set expiresIn 12h for testing purpose.
+      if (err) throw err;
+      res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).send('User successfully created.');
+    });
   } catch (error) {
     console.log(error);
   }
