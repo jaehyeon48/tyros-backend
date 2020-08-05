@@ -4,6 +4,19 @@ const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
 
 
+// @ROUTE         GET api/auth
+// @DESCRIPTION   check authentication
+// @ACCESS        Private
+async function checkAuthController(req, res) {
+  try {
+    const [userRow] = await pool.query(`SELECT user_id, first_name, last_name, email FROM users WHERE user_id = '${req.user.id}'`);
+    return res.status(200).json(userRow[0]);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: 'Internal Server Error' });
+  }
+}
+
 // @ROUTE         POST api/auth/login
 // @DESCRIPTION   Login user
 // @ACCESS        Public
@@ -73,6 +86,7 @@ async function signUpController(req, res) {
 }
 
 module.exports = {
+  checkAuthController,
   loginController,
   signUpController
 };
