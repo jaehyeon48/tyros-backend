@@ -13,7 +13,7 @@ async function checkAuthController(req, res) {
     return res.status(200).json(userRow[0]);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ msg: 'Internal Server Error' });
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
   }
 }
 
@@ -46,6 +46,7 @@ async function loginController(req, res) {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
   }
 }
 
@@ -82,6 +83,7 @@ async function signUpController(req, res) {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
   }
 }
 
