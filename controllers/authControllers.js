@@ -3,7 +3,41 @@ const jwt = require('jsonwebtoken');
 
 const pool = require('../database/db');
 
-// @ROUTE         POST api/auth/user
+
+// @ROUTE         POST api/auth/login
+// @DESCRIPTION   Login user
+// @ACCESS        Public
+async function loginController(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    const [userRow] = await pool.query(`SELECT user_id, password FROM users WHERE email = '${email}'`);
+
+    if (userRow[0] === undefined) {
+      return res.status(400).json({ errorMsg: 'Email or password is invalid.' });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, userRow[0]['password']);
+
+    if (!isPasswordMatch) {
+      return res.status(400).json({ errorMsg: 'Email or password is invalid.' });
+    }
+
+    const jwtPayload = {
+      user: { id: userRow[0]['user_id'] }
+    };
+
+    jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12' }, (err, token) => { // set expiresIn 12h for testing purpose.
+      if (err) throw err;
+      res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).send('Login success.');
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+// @ROUTE         POST api/auth/signup
 // @DESCRIPTION   Register user
 // @ACCESS        Public
 async function signUpController(req, res) {
@@ -25,10 +59,8 @@ async function signUpController(req, res) {
 
     const [userIdRow] = await pool.query(`SELECT user_id FROM users WHERE email = '${email}'`);
 
-    const newUserId = userIdRow[0]['user_id'];
-
     const jwtPayload = {
-      user: { id: newUserId }
+      user: { id: userIdRow[0]['user_id'] }
     };
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12' }, (err, token) => { // set expiresIn 12h for testing purpose.
@@ -41,5 +73,6 @@ async function signUpController(req, res) {
 }
 
 module.exports = {
+  loginController,
   signUpController
 };
