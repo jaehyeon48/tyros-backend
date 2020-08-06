@@ -42,7 +42,7 @@ async function loginController(req, res) {
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
       if (err) throw err;
-      res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).send('Login success.');
+      res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).json({ successMsg: 'Login success.' });
     });
   } catch (error) {
     console.log(error);
@@ -79,7 +79,7 @@ async function signUpController(req, res) {
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
       if (err) throw err;
-      res.status(200).cookie('token', token, { httpOnly: true, sameSite: true }).send('User successfully created.');
+      res.status(201).cookie('token', token, { httpOnly: true, sameSite: true }).json({ successMsg: 'User successfully created.' });
     });
   } catch (error) {
     console.log(error);
