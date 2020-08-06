@@ -18,6 +18,7 @@ app.use(express.json({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api/auth', require('./routes/authRoute'));
+app.use('/api/portfolio', require('./routes/portfolioRoute'));
 
 
 const PORT = process.env.PORT || 5000;
