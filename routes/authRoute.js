@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   checkAuthController,
+  logoutController,
   loginController,
   signUpController
 } = require('../controllers/authControllers');
@@ -13,6 +14,12 @@ const authMiddleware = require('../middlewares/authMiddleware');
 // @DESCRIPTION   check authentication
 // @ACCESS        Private
 router.get('/', authMiddleware, checkAuthController);
+
+
+// @ROUTE         GET api/auth/logout
+// @DESCRIPTION   Logout the user
+// @ACCESS        Private
+router.get('/logout', authMiddleware, logoutController);
 
 
 // @ROUTE         POST api/auth/login

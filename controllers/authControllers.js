@@ -17,6 +17,15 @@ async function checkAuthController(req, res) {
   }
 }
 
+
+// @ROUTE         GET api/auth/logout
+// @DESCRIPTION   Logout the user
+// @ACCESS        Private
+function logoutController(req, res) {
+  res.status(200).cookie('token', '', { maxAge: '-1' }).json({ successMsg: 'Successfully logged out' });
+}
+
+
 // @ROUTE         POST api/auth/login
 // @DESCRIPTION   Login user
 // @ACCESS        Public
@@ -89,6 +98,7 @@ async function signUpController(req, res) {
 
 module.exports = {
   checkAuthController,
+  logoutController,
   loginController,
-  signUpController
+  signUpController,
 };
