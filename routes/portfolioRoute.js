@@ -5,6 +5,7 @@ const {
   getPortfolios,
   getPortfolioStocks,
   getPortfolioCash,
+  getStockInfoByTickerGroup,
   createPortfolio,
   editPortfolioName,
   deletePortfolio
@@ -29,6 +30,13 @@ router.get('/:portfolioId/stocks', authMiddleware, getPortfolioStocks);
 // @DESCRIPTION   Get Portfolio's cash
 // @ACCESS        Private
 router.get('/:portfolioId/cash', authMiddleware, getPortfolioCash);
+
+
+// @ROUTE         GET api/portfolio/:portfolioId/:tickerName
+// @DESCRIPTION   Get Information of the Ticker Group in the portfolio
+// @ACCESS        Private
+router.get('/:portfolioId/:tickerName', authMiddleware, getStockInfoByTickerGroup);
+
 
 // @ROUTE         POST api/portfolio
 // @DESCRIPTION   Create New Portfolio

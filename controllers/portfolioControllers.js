@@ -69,6 +69,30 @@ async function getPortfolioCash(req, res) {
 }
 
 
+// @ROUTE         GET api/portfolio/:portfolioId/:tickerName
+// @DESCRIPTION   Get Information of the Ticker Group in the portfolio
+// @ACCESS        Private
+async function getStockInfoByTickerGroup(req, res) {
+  const userId = req.user.id;
+  const portfolioId = req.params.portfolioId;
+  const tickerName = req.params.tickerName;
+  const getStockQuery = `
+    SELECT stock_id, price, quantity, transaction_type, transaction_date
+    FROM stocks
+    WHERE ticker = '${tickerName}' AND holder_id = ${userId} AND portfolio_id = ${portfolioId}
+    ORDER BY transaction_date, transaction_type, quantity
+  `;
+  try {
+    const [stocksRow] = await pool.query(getStockQuery);
+
+    res.status(200).json(stocksRow);
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+
 // @ROUTE         POST api/portfolio
 // @DESCRIPTION   Create New Portfolio
 // @ACCESS        Private
@@ -125,6 +149,7 @@ module.exports = {
   getPortfolios,
   getPortfolioStocks,
   getPortfolioCash,
+  getStockInfoByTickerGroup,
   createPortfolio,
   editPortfolioName,
   deletePortfolio
