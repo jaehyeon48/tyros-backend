@@ -37,6 +37,27 @@ async function editUser(req, res) {
   }
 }
 
+
+// @ROUTE         DELETE api/user/:userId
+// @DESCRIPTION   Delete user's account and all of its related information
+// @ACCESS        Private
+async function deleteUser(req, res) {
+  const userId = req.params.userId;
+
+  try {
+    await pool.query(`DELETE FROM cash WHERE holder_id = '${userId}'`);
+    await pool.query(`DELETE FROM stocks WHERE holder_id = '${userId}'`);
+    await pool.query(`DELETE FROM portfolios WHERE owner_id = '${userId}'`);
+    await pool.query(`DELETE FROM users WHERE user_id = '${userId}'`);
+
+    res.status(200).json({ successMsg: 'The account successfully deleted!' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
-  editUser
+  editUser,
+  deleteUser
 };
