@@ -6,7 +6,8 @@ const {
   getPortfolioStocks,
   getPortfolioCash,
   createPortfolio,
-  editPortfolioName
+  editPortfolioName,
+  deletePortfolio
 } = require('../controllers/portfolioControllers');
 
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -39,5 +40,11 @@ router.post('/', authMiddleware, createPortfolio);
 // @DESCRIPTION   Edit Portfolio's Name
 // @ACCESS        Private
 router.put('/:portfolioId', authMiddleware, editPortfolioName);
+
+
+// @ROUTE         DELETE api/portfolio/:portfolioId
+// @DESCRIPTION   DELETE an portfolio all of its related information
+// @ACCESS        Private
+router.delete('/:portfolioId', authMiddleware, deletePortfolio);
 
 module.exports = router;

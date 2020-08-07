@@ -102,10 +102,30 @@ async function editPortfolioName(req, res) {
   }
 }
 
+
+// @ROUTE         DELETE api/portfolio/:portfolioId
+// @DESCRIPTION   DELETE an portfolio all of its related information
+// @ACCESS        Private
+async function deletePortfolio(req, res) {
+  const portfolioId = req.params.portfolioId;
+
+  try {
+    await pool.query(`DELETE FROM cash WHERE portfolio_id = '${portfolioId}'`);
+    await pool.query(`DELETE FROM stocks WHERE portfolio_id = '${portfolioId}'`);
+    await pool.query(`DELETE FROM portfolios WHERE portfolio_id = '${portfolioId}'`);
+
+    res.status(200).json({ successMsg: 'The portfolio successfully deleted.' });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
   getPortfolios,
   getPortfolioStocks,
   getPortfolioCash,
   createPortfolio,
-  editPortfolioName
+  editPortfolioName,
+  deletePortfolio
 };
