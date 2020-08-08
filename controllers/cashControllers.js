@@ -42,7 +42,25 @@ async function editCash(req, res) {
   }
 }
 
+
+// @ROUTE         DELETE api/cash/:cashId
+// @DESCRIPTION   Delete Cash
+// @ACCESS        Private
+async function deleteCash(req, res) {
+  const cashId = req.params.cashId;
+  const deleteCashQuery = `DELETE FROM cash WHERE cash_id = ${cashId}`;
+  try {
+    await pool.query(deleteCashQuery);
+
+    return res.status(200).json({ successMsg: 'Successfully deleted the cash' });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
   addCash,
-  editCash
+  editCash,
+  deleteCash
 };

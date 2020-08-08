@@ -5,7 +5,8 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 const {
   addCash,
-  editCash
+  editCash,
+  deleteCash
 } = require('../controllers/cashControllers');
 
 
@@ -19,5 +20,11 @@ router.post('/', authMiddleware, addCash);
 // @DESCRIPTION   Edit Stock's Information
 // @ACCESS        Private
 router.put('/:cashId', authMiddleware, editCash);
+
+
+// @ROUTE         DELETE api/cash/:cashId
+// @DESCRIPTION   Delete Cash
+// @ACCESS        Private
+router.delete('/:cashId', authMiddleware, deleteCash);
 
 module.exports = router;
