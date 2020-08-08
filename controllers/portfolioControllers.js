@@ -114,9 +114,16 @@ async function createPortfolio(req, res) {
 // @DESCRIPTION   Edit Portfolio's Name
 // @ACCESS        Private
 async function editPortfolioName(req, res) {
+  const userId = req.user.id;
   const { newPortfolioName } = req.body;
   const portfolioId = req.params.portfolioId;
   try {
+    const [ownerIdRow] = await pool.query(`SELECT owner_id FROM portfolios WHERE portfolio_id = ${portfolioId}`);
+
+    if (userId !== ownerIdRow[0]['owner_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot edit this portfolio.' });
+    }
+
     await pool.query(`UPDATE portfolios SET portfolio_name = '${newPortfolioName}' WHERE portfolio_id = ${portfolioId}`);
 
     res.status(200).json({ successMsg: 'Successfully changed portfolio name.' });
@@ -131,9 +138,16 @@ async function editPortfolioName(req, res) {
 // @DESCRIPTION   DELETE an portfolio all of its related information
 // @ACCESS        Private
 async function deletePortfolio(req, res) {
+  const userId = req.user.id;
   const portfolioId = req.params.portfolioId;
 
   try {
+    const [ownerIdRow] = await pool.query(`SELECT owner_id FROM portfolios WHERE portfolio_id = ${portfolioId}`);
+
+    if (userId !== ownerIdRow[0]['owner_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this portfolio.' });
+    }
+
     await pool.query(`DELETE FROM cash WHERE portfolio_id = '${portfolioId}'`);
     await pool.query(`DELETE FROM stocks WHERE portfolio_id = '${portfolioId}'`);
     await pool.query(`DELETE FROM portfolios WHERE portfolio_id = '${portfolioId}'`);
