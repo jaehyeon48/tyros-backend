@@ -28,6 +28,7 @@ async function addStock(req, res) {
 // @DESCRIPTION   Edit Stock's Information
 // @ACCESS        Private
 async function editStock(req, res) {
+  const userId = req.user.id;
   const stockId = req.params.stockId;
   const { price, quantity, transactionType, transactionDate } = req.body;
   const editStockQuery = `
@@ -37,6 +38,12 @@ async function editStock(req, res) {
     WHERE stock_id = ${stockId}`;
 
   try {
+    const [holderIdRow] = await pool.query(`SELECT holder_id FROM stocks WHERE stock_id = ${stockId}`);
+
+    if (userId !== holderIdRow[0]['holder_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
+    }
+
     await pool.query(editStockQuery);
 
     res.status(200).json({ successMsg: 'Successfully edited the stock info' });
@@ -59,6 +66,7 @@ async function deleteStock(req, res) {
     if (userId !== holderIdRow[0]['holder_id']) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
     }
+
     await pool.query(`DELETE FROM stocks WHERE stock_id = ${stockId}`);
 
     res.status(200).json({ successMsg: 'Successfully deleted the stock ' });

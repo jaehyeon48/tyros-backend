@@ -25,6 +25,7 @@ async function addCash(req, res) {
 // @DESCRIPTION   Edit Stock's Information
 // @ACCESS        Private
 async function editCash(req, res) {
+  const userId = req.user.id;
   const cashId = req.params.cashId;
   const { amount, transactionType, transactionDate } = req.body;
   const editCashQuery = `
@@ -33,6 +34,12 @@ async function editCash(req, res) {
     WHERE cash_id = ${cashId}`;
 
   try {
+    const [holderIdRow] = await pool.query(`SELECT holder_id FROM cash WHERE cash_id = ${cashId}`);
+
+    if (userId !== holderIdRow[0]['holder_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this cash info.' });
+    }
+
     await pool.query(editCashQuery);
 
     res.status(200).json({ successMsg: 'Successfully edited the cash info.' });
