@@ -20,6 +20,29 @@ async function addCash(req, res) {
   }
 }
 
+
+// @ROUTE         PUT api/cash/:cashId
+// @DESCRIPTION   Edit Stock's Information
+// @ACCESS        Private
+async function editCash(req, res) {
+  const cashId = req.params.cashId;
+  const { amount, transactionType, transactionDate } = req.body;
+  const editCashQuery = `
+    UPDATE cash
+    SET amount = ${amount}, transaction_type = '${transactionType}', transaction_date = '${transactionDate}'
+    WHERE cash_id = ${cashId}`;
+
+  try {
+    await pool.query(editCashQuery);
+
+    res.status(200).json({ successMsg: 'Successfully edited the cash info.' });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
-  addCash
+  addCash,
+  editCash
 };

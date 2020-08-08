@@ -4,7 +4,8 @@ const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const {
-  addCash
+  addCash,
+  editCash
 } = require('../controllers/cashControllers');
 
 
@@ -12,5 +13,11 @@ const {
 // @DESCRIPTION   Add New Cash
 // @ACCESS        Private
 router.post('/', authMiddleware, addCash);
+
+
+// @ROUTE         PUT api/cash/:cashId
+// @DESCRIPTION   Edit Stock's Information
+// @ACCESS        Private
+router.put('/:cashId', authMiddleware, editCash);
 
 module.exports = router;
