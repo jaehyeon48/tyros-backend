@@ -50,7 +50,7 @@ async function getPortfolioCash(req, res) {
   const userId = req.user.id;
   const portfolioId = req.params.portfolioId;
   const getCashQuery = `
-    SELECT cash.amount, cash.transaction_type, cash.transaction_date
+    SELECT cash_id, cash.amount, cash.transaction_type, cash.transaction_date
     FROM users
 	    INNER JOIN portfolios
 		    ON users.user_id = ${userId} AND portfolios.portfolio_id = ${portfolioId} AND users.user_id = portfolios.owner_id
