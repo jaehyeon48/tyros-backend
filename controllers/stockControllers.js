@@ -52,8 +52,13 @@ async function editStock(req, res) {
 // @ACCESS        Private
 async function deleteStock(req, res) {
   const stockId = req.params.stockId;
-
+  const userId = req.user.id;
   try {
+    const [holderIdRow] = await pool.query(`SELECT holder_id FROM stocks WHERE stock_id = ${stockId}`);
+
+    if (userId !== holderIdRow[0]['holder_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
+    }
     await pool.query(`DELETE FROM stocks WHERE stock_id = ${stockId}`);
 
     res.status(200).json({ successMsg: 'Successfully deleted the stock ' });
