@@ -34,6 +34,12 @@ async function getPortfolioStocks(req, res) {
       ORDER BY stocks.ticker, stocks.transaction_date, stocks.transaction_type;`;
 
   try {
+    const [ownerIdRow] = await pool.query(`SELECT owner_id FROM portfolios WHERE portfolio_id = ${portfolioId}`);
+
+    if (userId !== ownerIdRow[0]['owner_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot read this portfolio info.' });
+    }
+
     const [stocksRow] = await pool.query(getStocksQuery);
     res.status(200).json(stocksRow);
   } catch (error) {
@@ -60,6 +66,12 @@ async function getPortfolioCash(req, res) {
   `;
 
   try {
+    const [ownerIdRow] = await pool.query(`SELECT owner_id FROM portfolios WHERE portfolio_id = ${portfolioId}`);
+
+    if (userId !== ownerIdRow[0]['owner_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot read this portfolio info.' });
+    }
+
     const [cashRow] = await pool.query(getCashQuery);
     res.status(200).json(cashRow);
   } catch (error) {
@@ -83,6 +95,12 @@ async function getStockInfoByTickerGroup(req, res) {
     ORDER BY transaction_date, transaction_type, quantity
   `;
   try {
+    const [ownerIdRow] = await pool.query(`SELECT owner_id FROM portfolios WHERE portfolio_id = ${portfolioId}`);
+
+    if (userId !== ownerIdRow[0]['owner_id']) {
+      return res.status(403).json({ errorMsg: 'Wrong access: You cannot read this portfolio info.' });
+    }
+
     const [stocksRow] = await pool.query(getStockQuery);
 
     res.status(200).json(stocksRow);
