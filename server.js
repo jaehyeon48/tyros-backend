@@ -8,10 +8,11 @@ const app = express();
 
 // handling CORS
 app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Origin', 'http://tyros.s3-website-us-east-1.amazonaws.com');
   res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.set('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type');
   res.set('Access-Control-Allow-Credentials', true);
+  res.set("Access-Control-Max-Age", "3600");
   next();
 });
 app.use(express.json({ extended: false }));
