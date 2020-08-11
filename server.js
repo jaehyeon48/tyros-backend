@@ -1,5 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const cors = require('cors')
 require('dotenv').config();
 
 require('./database/db'); // connect to DB
@@ -7,14 +8,13 @@ require('./database/db'); // connect to DB
 const app = express();
 
 // handling CORS
-app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '^(https?://(?:.+\.)?tyros.s3-website-us-east-1.amazonaws\.com(?::\d{1,5})?)$.');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type');
-  res.set('Access-Control-Allow-Credentials', true);
-  res.set("Access-Control-Max-Age", "3600");
-  next();
-});
+app.use(cors({
+  origin: /^https?:\/\/tyros\.s3-website-us-east-1\.amazonaws\.com.*$/,
+  methods: 'GET,POST,PUT,PATCH,DELETE',
+  allowedHeaders: 'Content-Type,X-Requested-With',
+  credentials: true,
+  maxAge: 3600
+}));
 app.use(express.json({ extended: false }));
 app.use(cookieParser());
 
