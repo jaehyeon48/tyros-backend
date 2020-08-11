@@ -3,16 +3,22 @@ const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
 
 
-// @ROUTE         PUT api/user/:userId
+// @ROUTE         PUT api/user
 // @DESCRIPTION   Edit User's profile
 // @ACCESS        Private
 async function editUser(req, res) {
+  const userId = req.user.id;
   const { firstName, lastName, currentPassword } = req.body;
   let { newPassword } = req.body;
-  const userId = req.params.userId;
   let isCurrentPasswordMatch;
   let editUserQuery = `UPDATE users SET first_name = '${firstName}', last_name = '${lastName}' WHERE user_id = '${userId}'`;
   try {
+    const [isUserExist] = await pool.query(`SELECT user_id FROM users WHERE user_id = ${userId}`);
+
+    if (!isUserExist[0]) {
+      return res.status(400).json({ errorMsg: 'The user does not exist.' });
+    }
+
     if (currentPassword && newPassword) {
       const [userPasswordRow] = await pool.query(`SELECT password FROM users WHERE user_id = '${userId}'`);
       isCurrentPasswordMatch = await bcrypt.compare(currentPassword, userPasswordRow[0]['password']);
@@ -38,13 +44,18 @@ async function editUser(req, res) {
 }
 
 
-// @ROUTE         DELETE api/user/:userId
+// @ROUTE         DELETE api/user
 // @DESCRIPTION   Delete user's account and all of its related information
 // @ACCESS        Private
 async function deleteUser(req, res) {
-  const userId = req.params.userId;
-
+  const userId = req.user.id;
   try {
+    const [isUserExist] = await pool.query(`SELECT user_id FROM users WHERE user_id = ${userId}`);
+
+    if (!isUserExist[0]) {
+      return res.status(400).json({ errorMsg: 'The user does not exist.' });
+    }
+
     await pool.query(`DELETE FROM cash WHERE holder_id = '${userId}'`);
     await pool.query(`DELETE FROM stocks WHERE holder_id = '${userId}'`);
     await pool.query(`DELETE FROM portfolios WHERE owner_id = '${userId}'`);

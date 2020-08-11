@@ -8,7 +8,7 @@ const app = express();
 
 // handling CORS
 app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', 'http://tyros.s3-website-us-east-1.amazonaws.com');
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   res.set('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type');
   res.set('Access-Control-Allow-Credentials', true);

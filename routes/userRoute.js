@@ -9,15 +9,15 @@ const {
 } = require('../controllers/userControllers');
 
 
-// @ROUTE         PUT api/user/:userId
+// @ROUTE         PUT api/user
 // @DESCRIPTION   Edit User's profile
 // @ACCESS        Private
-router.put('/:userId', authMiddleware, editUser);
+router.put('/', authMiddleware, editUser);
 
 
-// @ROUTE         DELETE api/user/:userId
+// @ROUTE         DELETE api/user
 // @DESCRIPTION   Delete user's account and all of its related information
 // @ACCESS        Private
-router.delete('/:userId', authMiddleware, deleteUser);
+router.delete('/', authMiddleware, deleteUser);
 
 module.exports = router;
