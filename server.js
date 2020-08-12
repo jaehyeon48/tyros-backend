@@ -9,7 +9,7 @@ const app = express();
 
 // handling CORS
 app.use(cors({
-  origin: /^https?:\/\/tyros\.cf*$/,
+  origin: 'http://localhost:3000',
   methods: 'GET,POST,PUT,PATCH,DELETE',
   allowedHeaders: 'Content-Type,X-Requested-With',
   credentials: true,
