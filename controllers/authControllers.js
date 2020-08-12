@@ -22,7 +22,7 @@ async function checkAuthController(req, res) {
 // @DESCRIPTION   Logout the user
 // @ACCESS        Private
 function logoutController(req, res) {
-  res.status(200).cookie('token', '', { maxAge: '-1' }).json({ successMsg: 'Successfully logged out' });
+  res.status(200).cookie('token', '', { httpOnly: true, sameSite: 'none', secure: true, maxAge: '-1' }).json({ successMsg: 'Successfully logged out' });
 }
 
 
