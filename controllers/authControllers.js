@@ -10,7 +10,15 @@ const pool = require('../database/db');
 async function checkAuthController(req, res) {
   try {
     const [userRow] = await pool.query(`SELECT user_id, first_name, last_name, email, theme FROM users WHERE user_id = '${req.user.id}'`);
-    return res.status(200).json(userRow[0]);
+
+    let userData = {
+      userId: userRow[0]['user_id'],
+      firstName: userRow[0]['first_name'],
+      lastName: userRow[0]['last_name'],
+      email: userRow[0]['email'],
+      theme: userRow[0]['theme']
+    };
+    return res.status(200).json(userData);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
