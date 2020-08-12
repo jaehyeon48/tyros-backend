@@ -22,7 +22,7 @@ async function checkAuthController(req, res) {
 // @DESCRIPTION   Logout the user
 // @ACCESS        Private
 function logoutController(req, res) {
-  res.status(200).cookie('token', '', { httpOnly: true, sameSite: 'none', secure: true, maxAge: '-1' }).json({ successMsg: 'Successfully logged out' });
+  res.status(200).cookie('token', '', { httpOnly: true, maxAge: '-1' }).json({ successMsg: 'Successfully logged out' });
 }
 
 
@@ -51,7 +51,7 @@ async function loginController(req, res) {
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
       if (err) throw err;
-      res.status(200).cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true }).json({ successMsg: 'Login success.' });
+      res.status(200).cookie('token', token, { httpOnly: true }).json({ successMsg: 'Login success.' });
     });
   } catch (error) {
     console.log(error);
@@ -88,7 +88,7 @@ async function signUpController(req, res) {
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
       if (err) throw err;
-      res.status(201).cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true }).json({ successMsg: 'User successfully created.' });
+      res.status(201).cookie('token', token, { httpOnly: true }).json({ successMsg: 'User successfully created.' });
     });
   } catch (error) {
     console.log(error);
