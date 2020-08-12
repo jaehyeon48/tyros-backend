@@ -9,7 +9,16 @@ async function getPortfolios(req, res) {
   try {
     const [userPortfolios] = await pool.query(`SELECT portfolio_id, portfolio_name FROM portfolios WHERE owner_id = '${userId}'`);
 
-    res.status(200).json(userPortfolios);
+    let resultPortfolio = [];
+
+    userPortfolios.map(portfolio => {
+      resultPortfolio.push({
+        portfolioId: portfolio['portfolio_id'],
+        portfolioName: portfolio['portfolio_name']
+      });
+    });
+
+    res.status(200).json(resultPortfolio);
   } catch (error) {
     console.log(error)
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
