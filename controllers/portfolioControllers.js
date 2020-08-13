@@ -120,6 +120,26 @@ async function getStockInfoByTickerGroup(req, res) {
 }
 
 
+// @ROUTE         GET api/portfolio/select
+// @DESCRIPTION   Fetch selected portfolio
+// @ACCESS        Private
+async function getSelectedPortfolio(req, res) {
+  const userId = req.user.id;
+  try {
+    const [selectedPortfolioRow] = await pool.query(`SELECT * FROM selected_portfolio WHERE user_id = ${userId}`);
+
+    if (!selectedPortfolioRow[0]) {
+      return res.status(404).json({ errorMsg: 'Selected portfolio does not exist' });
+    }
+
+    return res.status(200).json({ selectedPortfolioId: selectedPortfolioRow[0]['portfolio_id'] });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+
 // @ROUTE         POST api/portfolio
 // @DESCRIPTION   Create New Portfolio
 // @ACCESS        Private
@@ -130,6 +150,24 @@ async function createPortfolio(req, res) {
   try {
     await pool.query(`INSERT INTO portfolios (portfolio_name, owner_id) VALUES ('${portfolioName}', ${userId})`);
     return res.status(201).json({ successMsg: 'New portfolio created' });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+// @ROUTE         POST api/portfolio/select
+// @DESCRIPTION   Save selected portfolio into the DB
+// @ACCESS        Private
+async function selectPortfolio(req, res) {
+  const userId = req.user.id;
+  const { portfolioId } = req.body;
+  try {
+    // delete a previously selected portfolio
+    await pool.query(`DELETE FROM selected_portfolio WHERE user_id = ${userId}`);
+    await pool.query(`INSERT INTO selected_portfolio VALUES (${portfolioId}, ${userId})`);
+
+    return res.status(201).json({ successMsg: 'Successfully saved selected portfolio' });
   } catch (error) {
     console.log(error)
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
@@ -189,8 +227,10 @@ async function deletePortfolio(req, res) {
 module.exports = {
   getPortfolios,
   getPortfolioStocks,
+  getSelectedPortfolio,
   getPortfolioCash,
   getStockInfoByTickerGroup,
+  selectPortfolio,
   createPortfolio,
   editPortfolioName,
   deletePortfolio

@@ -4,11 +4,13 @@ const router = express.Router();
 const {
   getPortfolios,
   getPortfolioStocks,
+  getSelectedPortfolio,
   getPortfolioCash,
   getStockInfoByTickerGroup,
   createPortfolio,
+  selectPortfolio,
   editPortfolioName,
-  deletePortfolio
+  deletePortfolio,
 } = require('../controllers/portfolioControllers');
 
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -38,10 +40,22 @@ router.get('/:portfolioId/cash', authMiddleware, getPortfolioCash);
 router.get('/:portfolioId/:tickerName', authMiddleware, getStockInfoByTickerGroup);
 
 
+// @ROUTE         GET api/portfolio/select
+// @DESCRIPTION   Fetch selected portfolio
+// @ACCESS        Private
+router.get('/select', authMiddleware, getSelectedPortfolio);
+
+
 // @ROUTE         POST api/portfolio
 // @DESCRIPTION   Create New Portfolio
 // @ACCESS        Private
 router.post('/', authMiddleware, createPortfolio);
+
+
+// @ROUTE         POST api/portfolio/select
+// @DESCRIPTION   Save selected portfolio into the DB
+// @ACCESS        Private
+router.post('/select', authMiddleware, selectPortfolio);
 
 
 // @ROUTE         PUT api/portfolio/:portfolioId
