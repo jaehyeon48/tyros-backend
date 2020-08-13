@@ -56,10 +56,11 @@ async function deleteUser(req, res) {
       return res.status(400).json({ errorMsg: 'The user does not exist.' });
     }
 
-    await pool.query(`DELETE FROM cash WHERE holder_id = '${userId}'`);
-    await pool.query(`DELETE FROM stocks WHERE holder_id = '${userId}'`);
-    await pool.query(`DELETE FROM portfolios WHERE owner_id = '${userId}'`);
-    await pool.query(`DELETE FROM users WHERE user_id = '${userId}'`);
+    await pool.query(`DELETE FROM cash WHERE holder_id = ${userId}`);
+    await pool.query(`DELETE FROM stocks WHERE holder_id = ${userId}`);
+    await pool.query(`DELETE FROM selected_portfolio WHERE user_id = ${userId}`);
+    await pool.query(`DELETE FROM portfolios WHERE owner_id = ${userId}`);
+    await pool.query(`DELETE FROM users WHERE user_id = ${userId}`);
 
     res.status(200).json({ successMsg: 'The account successfully deleted!' });
   } catch (error) {
