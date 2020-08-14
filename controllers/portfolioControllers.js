@@ -150,7 +150,9 @@ async function createPortfolio(req, res) {
   try {
     const isNameConflict = await pool.query(`SELECT portfolio_id FROM portfolios WHERE owner_id = ${userId} AND portfolio_name = '${portfolioName}'`);
 
-    if (isNameConflict[0]) {
+    console.log(isNameConflict[0])
+
+    if (isNameConflict[0].length !== 0) {
       return res.status(400).json({ errorMsg: 'Portfolio name is already exists.' });
     }
 
