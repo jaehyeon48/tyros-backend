@@ -221,9 +221,10 @@ async function deletePortfolio(req, res) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this portfolio.' });
     }
 
-    await pool.query(`DELETE FROM cash WHERE portfolio_id = '${portfolioId}'`);
-    await pool.query(`DELETE FROM stocks WHERE portfolio_id = '${portfolioId}'`);
-    await pool.query(`DELETE FROM portfolios WHERE portfolio_id = '${portfolioId}'`);
+    await pool.query(`DELETE FROM cash WHERE portfolio_id = ${portfolioId}`);
+    await pool.query(`DELETE FROM selected_portfolio WHERE portfolio_id = ${portfolioId}`)
+    await pool.query(`DELETE FROM stocks WHERE portfolio_id = ${portfolioId}`);
+    await pool.query(`DELETE FROM portfolios WHERE portfolio_id = ${portfolioId}`);
 
     res.status(200).json({ successMsg: 'The portfolio successfully deleted.' });
   } catch (error) {
