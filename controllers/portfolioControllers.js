@@ -148,6 +148,12 @@ async function createPortfolio(req, res) {
   const { portfolioName } = req.body;
 
   try {
+    const isNameConflict = await pool.query(`SELECT portfolio_id FROM portfolios WHERE owner_id = ${userId} AND portfolio_name = '${portfolioName}'`);
+
+    if (isNameConflict[0]) {
+      return res.status(400).json({ errorMsg: 'Portfolio name is already exists.' });
+    }
+
     await pool.query(`INSERT INTO portfolios (portfolio_name, owner_id) VALUES ('${portfolioName}', ${userId})`);
     return res.status(201).json({ successMsg: 'New portfolio created' });
   } catch (error) {
