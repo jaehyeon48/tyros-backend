@@ -204,6 +204,12 @@ async function editPortfolioName(req, res) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot edit this portfolio.' });
     }
 
+    const [isNameConflict] = await pool.query(`SELECT portfolio_id FROM portfolios WHERE portfolio_name = '${newPortfolioName}'`);
+
+    if (isNameConflict[0]) {
+      return res.status(400).json({ errorMsg: 'The portfolio name already exists.' });
+    }
+
     await pool.query(`UPDATE portfolios SET portfolio_name = '${newPortfolioName}' WHERE portfolio_id = ${portfolioId}`);
 
     res.status(200).json({ successMsg: 'Successfully changed portfolio name.' });
