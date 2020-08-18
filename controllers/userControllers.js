@@ -3,6 +3,22 @@ const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
 
 
+// @ROUTE         POSt api/user/avatar
+// @DESCRIPTION   Upload user's avatar
+// @ACCESS        Private
+async function uploadAvatar(req, res) {
+  const fileName = req.file.filename;
+  const userId = req.user.id;
+  try {
+    await pool.query(`UPDATE users SET avatar = '${fileName}' WHERE user_id = ${userId}`);
+    return res.status(200).json({ successMsg: 'Saved avatar successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+
 // @ROUTE         PUT api/user
 // @DESCRIPTION   Edit User's profile
 // @ACCESS        Private
@@ -70,6 +86,7 @@ async function deleteUser(req, res) {
 }
 
 module.exports = {
+  uploadAvatar,
   editUser,
   deleteUser
 };
