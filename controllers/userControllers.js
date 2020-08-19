@@ -2,7 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
+
+const {
+  uploadAvatarToS3,
+  deleteAvatarFromS3
+} = require('../utils/aws_s3');
 
 // @ROUTE         GET api/user/avatar
 // @DESCRIPTION   Get user's avatar
@@ -24,18 +30,23 @@ async function getAvatar(req, res) {
 // @DESCRIPTION   Upload user's avatar
 // @ACCESS        Private
 async function uploadAvatar(req, res) {
-  const fileName = req.file.filename;
   const userId = req.user.id;
+  const MIME_TYPE_MAP = {
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/jpeg': 'jpeg'
+  };
   try {
+    const avatarFileName = `${uuidv4()}.${MIME_TYPE_MAP[req.file.mimetype]}`;
     const [previousFile] = await pool.query(`SELECT avatar FROM users WHERE user_id = ${userId}`);
     if (previousFile[0].avatar) {
-      fs.unlink(`avatars/${previousFile[0].avatar}`, (err) => {
-        if (err) throw err;
-        console.log(`file ${previousFile[0].avatar} was deleted!`);
-      });
-    }
-    await pool.query(`UPDATE users SET avatar = '${fileName}' WHERE user_id = ${userId}`);
-    return res.status(200).json({ avatar: fileName });
+      deleteAvatarFromS3(previousFile[0].avatar);
+      console.log(`file ${previousFile[0].avatar} was deleted!`);
+    };
+
+    await pool.query(`UPDATE users SET avatar = '${avatarFileName}' WHERE user_id = ${userId}`);
+    uploadAvatarToS3(avatarFileName, Buffer.from(req.file.buffer, 'base64'));
+    return res.status(200).json({ avatar: avatarFileName });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
