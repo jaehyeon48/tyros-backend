@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
+const fs = require('fs');
 
 
 // @ROUTE         GET api/user/avatar
@@ -26,6 +27,13 @@ async function uploadAvatar(req, res) {
   const fileName = req.file.filename;
   const userId = req.user.id;
   try {
+    const [previousFile] = await pool.query(`SELECT avatar FROM users WHERE user_id = ${userId}`);
+    if (previousFile[0].avatar) {
+      fs.unlink(`avatars/${previousFile[0].avatar}`, (err) => {
+        if (err) throw err;
+        console.log(`file ${previousFile[0].avatar} was deleted!`);
+      });
+    }
     await pool.query(`UPDATE users SET avatar = '${fileName}' WHERE user_id = ${userId}`);
     return res.status(200).json({ successMsg: 'Saved avatar successfully' });
   } catch (error) {
