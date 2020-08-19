@@ -3,7 +3,23 @@ const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
 
 
-// @ROUTE         POSt api/user/avatar
+// @ROUTE         GET api/user/avatar
+// @DESCRIPTION   Get user's avatar
+// @ACCESS        Private
+async function getAvatar(req, res) {
+  const userId = req.user.id;
+
+  try {
+    const [userAvatarRow] = await pool.query(`SELECT avatar FROM users WHERE user_id = ${userId}`);
+    return res.status(200).json({ avatar: userAvatarRow[0].avatar });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+
+// @ROUTE         POST api/user/avatar
 // @DESCRIPTION   Upload user's avatar
 // @ACCESS        Private
 async function uploadAvatar(req, res) {
@@ -86,6 +102,7 @@ async function deleteUser(req, res) {
 }
 
 module.exports = {
+  getAvatar,
   uploadAvatar,
   editUser,
   deleteUser
