@@ -9,13 +9,14 @@ const pool = require('../database/db');
 // @ACCESS        Private
 async function checkAuthController(req, res) {
   try {
-    const [userRow] = await pool.query(`SELECT user_id, first_name, last_name, email, theme FROM users WHERE user_id = '${req.user.id}'`);
+    const [userRow] = await pool.query(`SELECT user_id, first_name, last_name, email, avatar, theme FROM users WHERE user_id = '${req.user.id}'`);
 
     let userData = {
       userId: userRow[0]['user_id'],
       firstName: userRow[0]['first_name'],
       lastName: userRow[0]['last_name'],
       email: userRow[0]['email'],
+      avatar: userRow[0]['avatar'],
       theme: userRow[0]['theme']
     };
     return res.status(200).json(userData);
