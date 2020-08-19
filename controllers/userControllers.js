@@ -35,7 +35,7 @@ async function uploadAvatar(req, res) {
       });
     }
     await pool.query(`UPDATE users SET avatar = '${fileName}' WHERE user_id = ${userId}`);
-    return res.status(200).json({ successMsg: 'Saved avatar successfully' });
+    return res.status(200).json({ avatar: fileName });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
