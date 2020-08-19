@@ -18,7 +18,7 @@ app.use(cors({
 }));
 app.use(express.json({ extended: false }));
 app.use(cookieParser());
-app.use('/avatars', express.static(path.join('avatars')));
+app.use('/avatars', express.static(path.join('/avatars')));
 
 app.use('/api/auth', require('./routes/authRoute'));
 app.use('/api/portfolio', require('./routes/portfolioRoute'));
