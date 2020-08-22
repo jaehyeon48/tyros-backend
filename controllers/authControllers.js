@@ -40,14 +40,14 @@ async function loginController(req, res) {
       return res.status(400).json({ errorMsg: 'Email or password is invalid.' });
     }
 
-    const isPasswordMatch = await bcrypt.compare(password, userRow[0]['password']);
+    const isPasswordMatch = await bcrypt.compare(password, userRow[0].password);
 
     if (!isPasswordMatch) {
       return res.status(400).json({ errorMsg: 'Email or password is invalid.' });
     }
 
     const jwtPayload = {
-      user: { id: userRow[0]['user_id'] }
+      user: { id: userRow[0].userId }
     };
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
