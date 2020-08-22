@@ -77,14 +77,14 @@ async function signUpController(req, res) {
     const encryptedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
-      `INSERT INTO users (first_name, last_name, email, password)
+      `INSERT INTO users (firstName, lastName, email, password)
        VALUES ('${firstName}', '${lastName}', '${email}', '${encryptedPassword}')`
     );
 
-    const [userIdRow] = await pool.query(`SELECT user_id FROM users WHERE email = '${email}'`);
+    const [userIdRow] = await pool.query(`SELECT userId FROM users WHERE email = '${email}'`);
 
     const jwtPayload = {
-      user: { id: userIdRow[0]['user_id'] }
+      user: { id: userIdRow[0].userId }
     };
 
     jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '12h' }, (err, token) => { // set expiresIn 12h for testing purpose.
