@@ -34,7 +34,7 @@ async function loginController(req, res) {
   const { email, password } = req.body;
 
   try {
-    const [userRow] = await pool.query(`SELECT user_id, password FROM users WHERE email = '${email}'`);
+    const [userRow] = await pool.query(`SELECT userId, password FROM users WHERE email = '${email}'`);
 
     if (userRow[0] === undefined) {
       return res.status(400).json({ errorMsg: 'Email or password is invalid.' });
