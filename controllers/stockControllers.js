@@ -11,8 +11,8 @@ async function addStock(req, res) {
   try {
     await pool.query(`
       INSERT INTO 
-      stocks (holder_id, portfolio_id, ticker, company_name, price, 
-        quantity, transaction_type, transaction_date)
+      stocks (holderId, portfolioId, ticker, companyName, price, 
+        quantity, transactionType, transactionDate)
       VALUES (${userId}, ${portfolioId}, '${ticker}', '${companyName}', 
         ${price}, ${quantity}, '${transactionType}', '${transactionDate}')`);
 
@@ -33,14 +33,14 @@ async function editStock(req, res) {
   const { price, quantity, transactionType, transactionDate } = req.body;
   const editStockQuery = `
     UPDATE stocks
-    SET price = ${price}, quantity = ${quantity}, transaction_type = '${transactionType}',
-      transaction_date = '${transactionDate}'
-    WHERE stock_id = ${stockId}`;
+    SET price = ${price}, quantity = ${quantity}, transactionType = '${transactionType}',
+      transactionDate = '${transactionDate}'
+    WHERE stockId = ${stockId}`;
 
   try {
-    const [holderIdRow] = await pool.query(`SELECT holder_id FROM stocks WHERE stock_id = ${stockId}`);
+    const [holderIdRow] = await pool.query(`SELECT holderId FROM stocks WHERE stockId = ${stockId}`);
 
-    if (userId !== holderIdRow[0]['holder_id']) {
+    if (userId !== holderIdRow[0].holderId) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
     }
 
@@ -61,13 +61,13 @@ async function deleteStock(req, res) {
   const stockId = req.params.stockId;
   const userId = req.user.id;
   try {
-    const [holderIdRow] = await pool.query(`SELECT holder_id FROM stocks WHERE stock_id = ${stockId}`);
+    const [holderIdRow] = await pool.query(`SELECT holderId FROM stocks WHERE stockId = ${stockId}`);
 
-    if (userId !== holderIdRow[0]['holder_id']) {
+    if (userId !== holderIdRow[0].holderId) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
     }
 
-    await pool.query(`DELETE FROM stocks WHERE stock_id = ${stockId}`);
+    await pool.query(`DELETE FROM stocks WHERE stockId = ${stockId}`);
 
     res.status(200).json({ successMsg: 'Successfully deleted the stock ' });
   } catch (error) {

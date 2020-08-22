@@ -8,7 +8,7 @@ async function addCash(req, res) {
   const userId = req.user.id;
   const { portfolioId, amount, transactionType, transactionDate } = req.body;
   const addCashQuery = `
-    INSERT INTO cash (holder_id, portfolio_id, amount, transaction_type, transaction_date)
+    INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate)
     VALUES (${userId}, ${portfolioId}, ${amount}, '${transactionType}', '${transactionDate}')`;
   try {
     await pool.query(addCashQuery);
@@ -30,13 +30,13 @@ async function editCash(req, res) {
   const { amount, transactionType, transactionDate } = req.body;
   const editCashQuery = `
     UPDATE cash
-    SET amount = ${amount}, transaction_type = '${transactionType}', transaction_date = '${transactionDate}'
-    WHERE cash_id = ${cashId}`;
+    SET amount = ${amount}, transactionType = '${transactionType}', transactionDate = '${transactionDate}'
+    WHERE cashId = ${cashId}`;
 
   try {
-    const [holderIdRow] = await pool.query(`SELECT holder_id FROM cash WHERE cash_id = ${cashId}`);
+    const [holderIdRow] = await pool.query(`SELECT holderId FROM cash WHERE cashId = ${cashId}`);
 
-    if (userId !== holderIdRow[0]['holder_id']) {
+    if (userId !== holderIdRow[0].holderId) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this cash info.' });
     }
 
@@ -56,11 +56,11 @@ async function editCash(req, res) {
 async function deleteCash(req, res) {
   const cashId = req.params.cashId;
   const userId = req.user.id;
-  const deleteCashQuery = `DELETE FROM cash WHERE cash_id = ${cashId}`;
+  const deleteCashQuery = `DELETE FROM cash WHERE cashId = ${cashId}`;
   try {
-    const [holderIdRow] = await pool.query(`SELECT holder_id FROM cash WHERE cash_id = ${cashId}`);
+    const [holderIdRow] = await pool.query(`SELECT holderId FROM cash WHERE cashId = ${cashId}`);
 
-    if (userId !== holderIdRow[0]['holder_id']) {
+    if (userId !== holderIdRow[0].holderId) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this cash info.' });
     }
     await pool.query(deleteCashQuery);
