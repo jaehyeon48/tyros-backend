@@ -69,12 +69,6 @@ async function getPortfolioCash(req, res) {
   `;
 
   try {
-    const [ownerIdRow] = await pool.query(`SELECT ownerId FROM portfolios WHERE portfolioId = ${portfolioId}`);
-
-    if (userId !== ownerIdRow[0].ownerId) {
-      return res.status(403).json({ errorMsg: 'Wrong access: You cannot read this portfolio info.' });
-    }
-
     const [cashRow] = await pool.query(getCashQuery);
     res.status(200).json(cashRow);
   } catch (error) {
