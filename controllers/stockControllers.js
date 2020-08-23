@@ -36,7 +36,7 @@ async function getRealTimePriceAndChange(req, res) {
     const realTimeData = {
       price: response.data.iexRealTimePrice,
       change: response.data.change,
-      changePercent: response.data.changePercent * 100
+      changePercent: Number((response.data.changePercent * 100).toFixed(2))
     }
     res.status(200).json(realTimeData);
   } catch (error) {
