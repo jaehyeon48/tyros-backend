@@ -12,10 +12,10 @@ async function checkMarketStatus(req, res) {
     const marketStatusResponse = await axios.get(apiUrl);
 
     if (marketStatusResponse.data.iexRealTimePrice === undefined) {
-      return res.status(200).send(false); // false for closed
+      return res.status(200).json(false); // false for closed
     }
 
-    return res.status(200).send(true); // true for opened
+    return res.status(200).json(true); // true for opened
   } catch (error) {
     console.error(error);
     res.status(500).json({ errorMsg: 'Internal Server Error' });
@@ -41,8 +41,26 @@ async function getRealTimePriceAndChange(req, res) {
     res.status(200).json(realTimeData);
   } catch (error) {
     console.error(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
   }
 }
+
+// @ROUTE         GET api/stock/close/:ticker
+// @DESCRIPTION   Get Close Price of the Stock
+// @ACCESS        Private
+async function getClosePrice(req, res) {
+  const ticker = req.params.ticker;
+  const apiUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/quote/close?token=${process.env.IEX_CLOUD_API_KEY}`;
+
+  try {
+    const response = await axios.get(apiUrl);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
 
 // @ROUTE         POST api/stock
 // @DESCRIPTION   Add New Stock
@@ -123,6 +141,7 @@ async function deleteStock(req, res) {
 module.exports = {
   checkMarketStatus,
   getRealTimePriceAndChange,
+  getClosePrice,
   addStock,
   editStock,
   deleteStock

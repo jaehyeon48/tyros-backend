@@ -6,6 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 const {
   checkMarketStatus,
   getRealTimePriceAndChange,
+  getClosePrice,
   addStock,
   editStock,
   deleteStock
@@ -21,6 +22,11 @@ router.get('/marketStatus', authMiddleware, checkMarketStatus);
 // @DESCRIPTION   Get Realtime Price and Change of the Stock
 // @ACCESS        Private
 router.get('/realtime/:ticker', authMiddleware, getRealTimePriceAndChange);
+
+// @ROUTE         GET api/stock/close/:ticker
+// @DESCRIPTION   Get Close Price of the Stock
+// @ACCESS        Private
+router.get('/close/:ticker', authMiddleware, getClosePrice);
 
 // @ROUTE         POST api/stock
 // @DESCRIPTION   Add New Stock
