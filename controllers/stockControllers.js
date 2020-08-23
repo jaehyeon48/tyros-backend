@@ -50,11 +50,16 @@ async function getRealTimePriceAndChange(req, res) {
 // @ACCESS        Private
 async function getClosePrice(req, res) {
   const ticker = req.params.ticker;
-  const apiUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/quote/close?token=${process.env.IEX_CLOUD_API_KEY}`;
+  const apiUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/quote/?token=${process.env.IEX_CLOUD_API_KEY}`;
 
   try {
     const response = await axios.get(apiUrl);
-    res.status(200).json(response.data);
+    const realTimeData = {
+      price: response.data.close,
+      change: response.data.change,
+      changePercent: Number((response.data.changePercent * 100).toFixed(2))
+    }
+    res.status(200).json(realTimeData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ errorMsg: 'Internal Server Error' });
