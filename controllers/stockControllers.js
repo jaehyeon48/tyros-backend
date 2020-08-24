@@ -11,7 +11,7 @@ async function checkMarketStatus(req, res) {
   try {
     const marketStatusResponse = await axios.get(apiUrl);
 
-    if (marketStatusResponse.data.iexRealTimePrice === undefined) {
+    if (marketStatusResponse.data.iexRealtimePrice === undefined) {
       return res.status(200).json(false); // false for closed
     }
 
@@ -34,9 +34,9 @@ async function getRealTimePriceAndChange(req, res) {
     const response = await axios.get(apiUrl);
 
     const realTimeData = {
-      price: response.data.iexRealTimePrice,
+      price: response.data.iexRealtimePrice,
       change: response.data.change,
-      changePercent: Number((response.data.changePercent * 100).toFixed(2))
+      changePercent: parseInt((response.data.changePercent * 100).toFixed(2))
     }
     res.status(200).json(realTimeData);
   } catch (error) {
@@ -57,7 +57,7 @@ async function getClosePrice(req, res) {
     const realTimeData = {
       price: response.data.latestPrice,
       change: response.data.change,
-      changePercent: Number((response.data.changePercent * 100).toFixed(2))
+      changePercent: parseInt((response.data.changePercent * 100).toFixed(2))
     }
     res.status(200).json(realTimeData);
   } catch (error) {
