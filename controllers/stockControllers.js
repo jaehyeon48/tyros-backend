@@ -55,7 +55,7 @@ async function getClosePrice(req, res) {
   try {
     const response = await axios.get(apiUrl);
     const realTimeData = {
-      price: response.data.close,
+      price: response.data.latestPrice,
       change: response.data.change,
       changePercent: Number((response.data.changePercent * 100).toFixed(2))
     }
