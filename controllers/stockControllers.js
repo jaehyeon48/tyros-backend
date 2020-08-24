@@ -36,7 +36,7 @@ async function getRealTimePriceAndChange(req, res) {
     const realTimeData = {
       price: response.data.iexRealtimePrice,
       change: response.data.change,
-      changePercent: parseInt((response.data.changePercent * 100).toFixed(2))
+      changePercent: parseFloat((response.data.changePercent * 100).toFixed(2))
     }
     res.status(200).json(realTimeData);
   } catch (error) {
@@ -57,7 +57,7 @@ async function getClosePrice(req, res) {
     const realTimeData = {
       price: response.data.latestPrice,
       change: response.data.change,
-      changePercent: parseInt((response.data.changePercent * 100).toFixed(2))
+      changePercent: parseFloat((response.data.changePercent * 100).toFixed(2))
     }
     res.status(200).json(realTimeData);
   } catch (error) {
