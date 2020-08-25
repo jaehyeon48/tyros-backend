@@ -75,9 +75,19 @@ async function getClosePrice(req, res) {
 // @ACCESS        Private
 async function addStock(req, res) {
   const userId = req.user.id;
-  const { portfolioId, ticker, companyName, price, quantity, transactionType, transactionDate } = req.body;
+  const { portfolioId, ticker, companyName, price, quantity, referCash, transactionType, transactionDate } = req.body;
 
   try {
+    if (referCash) {
+      if (transactionType === 'buy') {
+        const cashToWithdraw = parseFloat((price * quantity).toFixed(2));
+        await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToWithdraw}, 'withdraw', ${transactionDate})`);
+      }
+      else if (transactionType === 'sell') {
+        const cashToDeposit = parseFloat((price * quantity).toFixed(2));
+        await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToDeposit}, 'deposit', ${transactionDate})`);
+      }
+    }
     await pool.query(`
       INSERT INTO 
       stocks (holderId, portfolioId, ticker, companyName, price, 
