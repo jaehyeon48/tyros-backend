@@ -10,8 +10,11 @@ async function checkMarketStatus(req, res) {
 
   try {
     const marketStatusResponse = await axios.get(apiUrl);
+    const currentTimestamp = new Date().getTime();
+    const latestTimestamp = marketStatusResponse.data.iexLastUpdated;
 
-    if (marketStatusResponse.data.iexRealtimePrice === undefined) {
+    const minuitesDifference = Math.floor(currentTimestamp - latestTimestamp / 1000 / 60);
+    if (minuitesDifference > 5) {
       return res.status(200).json(false); // false for closed
     }
 
