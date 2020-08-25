@@ -222,7 +222,7 @@ async function deletePortfolio(req, res) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this portfolio.' });
     }
 
-    const [isSelectedOne] = await pool.query(`SELECT portfolioId FROM selectedPortfolio WHERE portfolio_id = ${portfolioId}`);
+    const [isSelectedOne] = await pool.query(`SELECT portfolioId FROM selectedPortfolio WHERE portfolioId = ${portfolioId}`);
 
     await pool.query(`DELETE FROM cash WHERE portfolioId = ${portfolioId}`);
     await pool.query(`DELETE FROM selectedPortfolio WHERE portfolioId = ${portfolioId}`)
