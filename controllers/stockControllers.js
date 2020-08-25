@@ -13,8 +13,8 @@ async function checkMarketStatus(req, res) {
     const currentTimestamp = new Date().getTime();
     const latestTimestamp = marketStatusResponse.data.iexLastUpdated;
 
-    const minuitesDifference = Math.floor(currentTimestamp - latestTimestamp / 1000 / 60);
-    if (minuitesDifference > 5) {
+    const minutesDifference = Math.floor((currentTimestamp - latestTimestamp) / 1000 / 60);
+    if (minutesDifference > 2) {
       return res.status(200).json(false); // false for closed
     }
 
