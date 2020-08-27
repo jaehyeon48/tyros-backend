@@ -94,7 +94,6 @@ async function getCompanyInfo(req, res) {
   try {
     const response = await axios.get(apiUrl);
 
-    console.log(response.data);
     return res.status(200).json(response.data);
   } catch (error) {
     console.error(error);
