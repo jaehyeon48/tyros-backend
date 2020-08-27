@@ -14,7 +14,7 @@ async function checkMarketStatus(req, res) {
     const latestTimestamp = marketStatusResponse.data.iexLastUpdated;
 
     const minutesDifference = Math.floor((currentTimestamp - latestTimestamp) / 1000 / 60);
-    if (minutesDifference > 2) {
+    if (minutesDifference > 1) {
       return res.status(200).json(false); // false for closed
     }
 
@@ -63,6 +63,39 @@ async function getClosePrice(req, res) {
       changePercent: parseFloat((response.data.changePercent * 100).toFixed(2))
     }
     res.status(200).json(realTimeData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+// @ROUTE         GET api/stock/sector/:ticker
+// @DESCRIPTION   Get Information about the company
+// @ACCESS        Private
+async function getSectorInfo(req, res) {
+  const ticker = req.params.ticker;
+  const apiUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/company?token=${process.env.IEX_CLOUD_API_KEY}`;
+  try {
+    const response = await axios.get(apiUrl);
+
+    return res.status(200).json(response.data.sector);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+// @ROUTE         GET api/stock/info/:ticker
+// @DESCRIPTION   Get Information about the company
+// @ACCESS        Private
+async function getCompanyInfo(req, res) {
+  const ticker = req.params.ticker;
+  const apiUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/company?token=${process.env.IEX_CLOUD_API_KEY}`;
+  try {
+    const response = await axios.get(apiUrl);
+
+    console.log(response.data);
+    return res.status(200).json(response.data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ errorMsg: 'Internal Server Error' });
@@ -160,6 +193,8 @@ module.exports = {
   checkMarketStatus,
   getRealTimePriceAndChange,
   getClosePrice,
+  getSectorInfo,
+  getCompanyInfo,
   addStock,
   editStock,
   deleteStock
