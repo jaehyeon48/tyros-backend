@@ -43,8 +43,18 @@ async function getPortfolioStocks(req, res) {
       ORDER BY stocks.ticker, stocks.transactionDate, stocks.transactionType;`;
 
   try {
-    const [stocksRow] = await pool.query(getStocksQuery);
-    res.status(200).json(stocksRow);
+    if (portfolioId !== null) {
+      const [stocksRow] = await pool.query(getStocksQuery);
+      if (stocksRow.length === 0) {
+        return res.status(200).json(null);
+      }
+      else {
+        return res.status(200).json(stocksRow);
+      }
+    }
+    else {
+      return res.status(404);
+    }
   } catch (error) {
     console.log(error)
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
