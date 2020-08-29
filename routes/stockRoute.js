@@ -11,7 +11,8 @@ const {
   getCompanyInfo,
   addStock,
   editStock,
-  deleteStock
+  deleteStock,
+  closePosition
 } = require('../controllers/stockControllers');
 
 
@@ -56,5 +57,10 @@ router.put('/:stockId', authMiddleware, editStock);
 // @DESCRIPTION   Delete Stock
 // @ACCESS        Private
 router.delete('/:stockId', authMiddleware, deleteStock);
+
+// @ROUTE         DELETE api/stock/:portfolioId/:ticker
+// @DESCRIPTION   Close position
+// @ACCESS        Private
+router.delete('/:portfolioId/:ticker', authMiddleware, closePosition);
 
 module.exports = router;

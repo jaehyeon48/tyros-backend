@@ -180,9 +180,27 @@ async function deleteStock(req, res) {
 
     await pool.query(`DELETE FROM stocks WHERE stockId = ${stockId}`);
 
-    res.status(200).json({ successMsg: 'Successfully deleted the stock ' });
+    res.status(200).json({ successMsg: 'Successfully deleted the stock' });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+// @ROUTE         DELETE api/stock/:portfolioId/:ticker
+// @DESCRIPTION   Close position
+// @ACCESS        Private
+async function closePosition(req, res) {
+  const userId = req.user.id;
+  const portfolioId = req.params.portfolioId;
+  const ticker = req.params.ticker;
+
+  try {
+    await pool.query(`DELETE FROM stocks WHERE holderId = ${userId} AND portfolioId = ${portfolioId} AND ticker = '${ticker}'`);
+
+    res.status(200).json({ successMsg: 'Successfully closed the position' });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
   }
 }
@@ -196,5 +214,6 @@ module.exports = {
   getCompanyInfo,
   addStock,
   editStock,
-  deleteStock
+  deleteStock,
+  closePosition
 };
