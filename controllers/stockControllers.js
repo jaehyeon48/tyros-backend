@@ -11,7 +11,7 @@ async function checkMarketStatus(req, res) {
   try {
     const marketStatusResponse = await axios.get(apiUrl);
     const currentTimestamp = new Date().getTime();
-    const latestTimestamp = marketStatusResponse.data.iexLastUpdated;
+    const latestTimestamp = marketStatusResponse.data.lastTradeTime;
 
     const minutesDifference = Math.floor((currentTimestamp - latestTimestamp) / 1000 / 60);
     if (minutesDifference > 1) {
@@ -113,11 +113,11 @@ async function addStock(req, res) {
     if (referCash) {
       if (transactionType === 'buy') {
         const cashToWithdraw = parseFloat((price * quantity).toFixed(2));
-        await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToWithdraw}, 'withdraw', ${transactionDate})`);
+        await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToWithdraw}, 'withdraw', '${transactionDate}')`);
       }
       else if (transactionType === 'sell') {
         const cashToDeposit = parseFloat((price * quantity).toFixed(2));
-        await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToDeposit}, 'deposit', ${transactionDate})`);
+        await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToDeposit}, 'deposit', '${transactionDate}')`);
       }
     }
     await pool.query(`
