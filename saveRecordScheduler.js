@@ -4,15 +4,10 @@ require('dotenv').config();
 
 async function saveRecordScheduler() {
   if (checkMarketWasOpened()) {
-    const users = await getAllUsers();
-    const portfolios = [];
-    const stocks = [];
+    const portfolios = await getAllPortfolios();
 
-    // Get all portfolio IDs from each user
-    for (const userId of users) {
-      const portfolioIds = await getUsersPortfolios(userId);
-
-      portfolios.push(portfolioIds);
+    for (const portfolioId of portfolios) {
+      const userId = await getUserIdByPortfolioId(portfolioId);
     }
   }
 }
@@ -43,32 +38,44 @@ async function checkMarketWasOpened() {
   }
 }
 
-async function getAllUsers() {
-  const userIds = [];
+async function getUserIdByPortfolioId(portfolioId) {
   try {
-    const [userListRows] = await pool.query('SELECT userId FROM users ORDER BY userId asc');
+    const [userListRows] = await pool.query(`SELECT ownerId FROM portfolios WHERE portfolioId = ${portfolioId}`);
 
-    userListRows.forEach((user) => {
-      userIds.push(user.userId);
-    });
-
-    return userIds;
+    return userListRows[0];
   } catch (error) {
     console.error(error);
   }
 }
 
-async function getUsersPortfolios(userId) {
+async function getAllPortfolios() {
   const portfolioIds = [];
   try {
-    const [portfoliosRow] = await pool.query(`SELECT portfolioId FROM portfolios WHERE ownerId = ${userId} ORDER BY portfolioId asc`);
-
+    const [portfoliosRow] = await pool.query('SELECT portfolioId FROM portfolios ORDER BY portfolioId asc');
 
     portfoliosRow.forEach((portfolio) => {
       portfolioIds.push(portfolio.portfolioId);
     });
 
     return portfolioIds;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getStockData(userId, portfolioId) {
+  try {
+    const getStocksQuery = `
+    SELECT stocks.ticker, stocks.companyName, stocks.price, stocks.quantity, 
+    stocks.transactionType, stocks.transactionDate
+    FROM users
+      INNER JOIN portfolios
+        ON users.userId = ${userId} AND portfolios.portfolioId = ${portfolioId} AND users.userId = portfolios.ownerId 
+      INNER JOIN stocks
+        ON users.userId = stocks.holderId AND portfolios.portfolioId = stocks.portfolioId
+      ORDER BY stocks.ticker, stocks.transactionDate, stocks.transactionType;`;
+    const [stocksRow] = await pool.query(getStocksQuery);
+    console.log(stocksRow);
   } catch (error) {
     console.error(error);
   }
