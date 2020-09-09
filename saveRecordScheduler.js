@@ -6,12 +6,14 @@ async function saveRecordScheduler() {
   if (checkMarketWasOpened()) {
     const users = await getAllUsers();
     const portfolios = [];
+    const stocks = [];
 
-    users.forEach(async (userId) => {
+    // Get all portfolio IDs from each user
+    for (const userId of users) {
       const portfolioIds = await getUsersPortfolios(userId);
 
       portfolios.push(portfolioIds);
-    });
+    }
   }
 }
 
