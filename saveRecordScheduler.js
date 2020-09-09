@@ -2,15 +2,21 @@ const axios = require('axios');
 const pool = require('./database/db');
 require('dotenv').config();
 
+// main function
 async function saveRecordScheduler() {
   if (checkMarketWasOpened()) {
     const portfolios = await getAllPortfolios();
+    let organizedStocks = []; // organized stocks by ticker
 
     for (const portfolioId of portfolios) {
       const userId = await getUserIdByPortfolioId(portfolioId);
 
       const stocks = await getStockData(userId, portfolioId);
-      const organizedStocks = await sortStocks(stocks); // organize stocks by ticker
+      organizedStocks.push({
+        userId,
+        portfolioId,
+        stocks: await sortStocks(stocks)
+      }); // organize stocks by ticker
     }
   }
 }
