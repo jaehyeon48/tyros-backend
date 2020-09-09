@@ -5,6 +5,13 @@ require('dotenv').config();
 async function saveRecordScheduler() {
   if (checkMarketWasOpened()) {
     const users = await getAllUsers();
+    const portfolios = [];
+
+    users.forEach(async (userId) => {
+      const portfolioIds = await getUsersPortfolios(userId);
+
+      portfolios.push(portfolioIds);
+    });
   }
 }
 
@@ -44,6 +51,22 @@ async function getAllUsers() {
     });
 
     return userIds;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getUsersPortfolios(userId) {
+  const portfolioIds = [];
+  try {
+    const [portfoliosRow] = await pool.query(`SELECT portfolioId FROM portfolios WHERE ownerId = ${userId} ORDER BY portfolioId asc`);
+
+
+    portfoliosRow.forEach((portfolio) => {
+      portfolioIds.push(portfolio.portfolioId);
+    });
+
+    return portfolioIds;
   } catch (error) {
     console.error(error);
   }
