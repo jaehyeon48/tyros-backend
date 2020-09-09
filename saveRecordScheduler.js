@@ -23,8 +23,11 @@ async function saveRecordScheduler() {
         totalValue: parseFloat((totalValueOfPortfolio + totalCash).toFixed(2))
       });
 
-      // save total value into DB
-      await saveRecordIntoDB(usersValueData);
+    }
+
+    // save total value into DB
+    for (const valueDataItem of usersValueData) {
+      await saveRecordIntoDB(valueDataItem);
     }
   }
 }
