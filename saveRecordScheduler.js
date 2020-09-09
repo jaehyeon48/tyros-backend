@@ -6,17 +6,25 @@ require('dotenv').config();
 async function saveRecordScheduler() {
   if (checkMarketWasOpened()) {
     const portfolios = await getAllPortfolios();
-    let organizedStocks = []; // organized stocks by ticker
+    let usersValueData = []; // organized stocks by ticker
 
     for (const portfolioId of portfolios) {
       const userId = await getUserIdByPortfolioId(portfolioId);
 
       const stocks = await getStockData(userId, portfolioId);
-      organizedStocks.push({
+      const organizedStocks = await sortStocks(stocks);
+      // calculate total value of stocks in each portfolio
+      const totalValueOfPortfolio = await calculateValueOfStock(organizedStocks);
+
+      const totalCash = await getTotalCash(userId, portfolioId);
+      usersValueData.push({
         userId,
         portfolioId,
-        stocks: await sortStocks(stocks)
-      }); // organize stocks by ticker
+        totalValue: parseFloat((totalValueOfPortfolio + totalCash).toFixed(2))
+      });
+
+      // save total value into DB
+      await saveRecordIntoDB(usersValueData);
     }
   }
 }
@@ -150,6 +158,69 @@ async function organizeGroupedStocks(ticker, shareInfo) {
   share.dailyReturn = null;
   share.overallReturn = null;
   return share;
+}
+
+// calculate total value of each stock by adding cost, total return
+async function calculateValueOfStock(stocks) {
+  let totalCostOfStocks = 0;
+  let totalOverallReturn = 0;
+  for (const stock of stocks) {
+    const closePrice = await getClosePrice(stock.ticker);
+
+    totalOverallReturn += (closePrice - stock.avgCost) * stock.quantity; // overall return
+    totalCostOfStocks += stock.avgCost * stock.quantity;
+  }
+  return (totalCostOfStocks + totalOverallReturn);
+}
+
+async function getClosePrice(ticker) {
+  const apiUrl = `https://cloud.iexapis.com/stable/stock/${ticker}/quote/?token=${process.env.IEX_CLOUD_API_KEY}`;
+
+  try {
+    const response = await axios.get(apiUrl);
+    return response.data.latestPrice;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// get cash data
+async function getTotalCash(userId, portfolioId) {
+  const getCashQuery = `
+    SELECT cashId, cash.amount, cash.transactionType, cash.transactionDate
+    FROM users
+	    INNER JOIN portfolios
+		    ON users.userId = ${userId} AND portfolios.portfolioId = ${portfolioId} AND users.userId = portfolios.ownerId
+	    INNER JOIN cash
+		    ON users.userId = cash.holderId AND portfolios.portfolioId = cash.portfolioId
+	    ORDER BY transactionDate;
+  `;
+
+  try {
+    const [cashRow] = await pool.query(getCashQuery);
+    return calculateTotalCashAmount(cashRow);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// add all cash data
+function calculateTotalCashAmount(cashList) {
+  let totalCashAmount = 0;
+  cashList.forEach(cash => {
+    if (cash.transactionType === 'deposit') {
+      totalCashAmount += cash.amount;
+    }
+    else if (cash.transactionType === 'withdraw') {
+      totalCashAmount -= cash.amount;
+    }
+  });
+  return totalCashAmount;
+}
+
+async function saveRecordIntoDB(recordData) {
+  const todayDate = new Date().toJSON().slice(0, 10);
+  await pool.query(`INSERT INTO dailyRecords (userId, portfolioId, dailyReturn, totalValue, recordDate) VALUES (${recordData.userId}, ${recordData.portfolioId}, 0, ${recordData.totalValue}, '${todayDate}')`);
 }
 
 saveRecordScheduler();
