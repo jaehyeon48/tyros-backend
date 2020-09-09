@@ -4,6 +4,8 @@ require('dotenv').config();
 
 // main function
 async function saveRecordScheduler() {
+  console.log('initiate saving records');
+
   if (checkMarketWasOpened()) {
     const portfolios = await getAllPortfolios();
     let usersValueData = []; // organized stocks by ticker
@@ -29,6 +31,8 @@ async function saveRecordScheduler() {
     for (const valueDataItem of usersValueData) {
       await saveRecordIntoDB(valueDataItem);
     }
+
+    console.log('saved record successfully');
   }
 }
 
