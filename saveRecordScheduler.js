@@ -4,7 +4,7 @@ require('dotenv').config();
 
 async function saveRecordScheduler() {
   if (checkMarketWasOpened()) {
-
+    const users = await getAllUsers();
   }
 }
 
@@ -13,7 +13,7 @@ async function saveRecordScheduler() {
 // and IEX api's timestamp and if the difference between the two is less than 35 minutes,
 // return true. The reason of 35 minutes is the schedule is running at 8:30PM UTC (which is 30 minutes
 // after the market's official closing time) plus 5 minutes of margin in case of a latency.
-function checkMarketWasOpened() {
+async function checkMarketWasOpened() {
   const apiUrl = `https://cloud.iexapis.com/stable/stock/aapl/quote?token=${process.env.IEX_CLOUD_API_KEY}`;
 
   try {
@@ -34,5 +34,19 @@ function checkMarketWasOpened() {
   }
 }
 
+async function getAllUsers() {
+  const userIds = [];
+  try {
+    const [userListRows] = await pool.query('SELECT userId FROM users ORDER BY userId asc');
+
+    userListRows.forEach((user) => {
+      userIds.push(user.userId);
+    });
+
+    return userIds;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 saveRecordScheduler();
