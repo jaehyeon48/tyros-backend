@@ -77,8 +77,8 @@ async function signUpController(req, res) {
     const encryptedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
-      `INSERT INTO users (firstName, lastName, email, password)
-       VALUES ('${firstName}', '${lastName}', '${email}', '${encryptedPassword}')`
+      `INSERT INTO users (firstName, lastName, email, password, theme)
+       VALUES ('${firstName}', '${lastName}', '${email}', '${encryptedPassword}', 'light')`
     );
 
     const [userIdRow] = await pool.query(`SELECT userId FROM users WHERE email = '${email}'`);
