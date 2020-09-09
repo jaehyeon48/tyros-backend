@@ -5,7 +5,8 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 const {
   getRecord,
-  addNewRecord
+  addNewRecord,
+  deleteUsersRecords
 } = require('../controllers/recordControllers');
 
 
@@ -18,5 +19,10 @@ router.get('/', authMiddleware, getRecord);
 // @DESCRIPTION   Add A New Record
 // @ACCESS        Private
 router.post('/', authMiddleware, addNewRecord);
+
+// @ROUTE         DELETE api/record
+// @DESCRIPTION   Delete All of User's Record
+// @ACCESS        Private
+router.delete('/', authMiddleware, deleteUsersRecords);
 
 module.exports = router;

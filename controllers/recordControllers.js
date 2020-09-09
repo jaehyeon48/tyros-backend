@@ -23,8 +23,6 @@ async function addNewRecord(req, res) {
   const userId = req.user.id;
   const { dailyReturn, totalValue, recordDate } = req.body;
 
-  console.log(dailyReturn, totalValue, recordDate)
-
   try {
     await pool.query(`INSERT INTO dailyRecords (userId, dailyReturn, totalValue, recordDate)
     VALUES (${userId}, ${dailyReturn}, ${totalValue}, '${recordDate}')`);
@@ -35,7 +33,20 @@ async function addNewRecord(req, res) {
   }
 }
 
+async function deleteUsersRecords(req, res) {
+  const userId = req.user.id;
+
+  try {
+    await pool.query(`DELETE FROM dailyRecords WHERE userId = ${userId}`);
+    return res.status(200).json({ successMsg: 'Deleted all of user\'s records successfully.' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
   getRecord,
-  addNewRecord
+  addNewRecord,
+  deleteUsersRecords
 };
