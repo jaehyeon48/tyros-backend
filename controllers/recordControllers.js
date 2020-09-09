@@ -1,14 +1,16 @@
 const pool = require('../database/db');
 
 
-// @ROUTE         GET api/record
-// @DESCRIPTION   Get A Record
+// @ROUTE         GET api/record/10days
+// @DESCRIPTION   Get Recent 10 Records
 // @ACCESS        Private
-async function getRecord(req, res) {
+async function getRecordsBy10(req, res) {
   const userId = req.user.id;
 
   try {
-    const [recordsRow] = await pool.query(`SELECT dailyReturn, totalValue, recordDate FROM dailyRecords WHERE userId = ${userId} ORDER BY recordDate asc`);
+    const [recordsRow] = await pool.query(`SELECT dailyReturn, totalValue, recordDate FROM dailyRecords WHERE userId = ${userId} ORDER BY recordDate desc LIMIT 10`);
+
+    recordsRow.reverse(); // make records sorted by date in ascending order
     return res.status(200).json({ records: recordsRow });
   } catch (error) {
     console.error(error);
@@ -46,7 +48,7 @@ async function deleteUsersRecords(req, res) {
 }
 
 module.exports = {
-  getRecord,
+  getRecordsBy10,
   addNewRecord,
   deleteUsersRecords
 };

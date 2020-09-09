@@ -4,16 +4,16 @@ const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const {
-  getRecord,
+  getRecordsBy10,
   addNewRecord,
   deleteUsersRecords
 } = require('../controllers/recordControllers');
 
 
-// @ROUTE         GET api/record
-// @DESCRIPTION   Get A Record
+// @ROUTE         GET api/records/10days
+// @DESCRIPTION   Get Recent 10 Records
 // @ACCESS        Private
-router.get('/', authMiddleware, getRecord);
+router.get('/10days', authMiddleware, getRecordsBy10);
 
 // @ROUTE         POST api/record
 // @DESCRIPTION   Add A New Record
