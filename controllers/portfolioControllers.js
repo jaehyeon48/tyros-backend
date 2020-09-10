@@ -240,6 +240,7 @@ async function deletePortfolio(req, res) {
     await pool.query(`DELETE FROM stocks WHERE portfolioId = ${portfolioId}`);
     await pool.query(`DELETE FROM portfolios WHERE portfolioId = ${portfolioId}`);
 
+    // if the portfolio is selected one, select another portfolio if there exists other portfolios.
     if (isSelectedOne[0]) {
       const [userPortfolioRow] = await pool.query(`SELECT portfolioId FROM portfolios WHERE ownerId = ${userId}`);
 
