@@ -34,6 +34,9 @@ async function saveRecordScheduler() {
 
     console.log('saved record successfully');
   }
+  else {
+    console.log('Market was not opened today.');
+  }
 }
 
 // Check if the market 'was' opened for the day by comparing timestamp between current timestamp
