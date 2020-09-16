@@ -188,6 +188,7 @@ async function deleteStock(req, res) {
     }
 
     await pool.query(`DELETE FROM stocks WHERE stockId = ${stockId}`);
+    await pool.query(`DELETE FROM realizedStocks WHERE stockId = ${stockId}`);
 
     res.status(200).json({ successMsg: 'Successfully deleted the stock' });
   } catch (error) {
