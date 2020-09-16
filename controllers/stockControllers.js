@@ -150,7 +150,8 @@ async function addStock(req, res) {
 async function editStock(req, res) {
   const userId = req.user.id;
   const stockId = req.params.stockId;
-  const { price, quantity, transactionType, transactionDate } = req.body;
+  const { price, quantity, transactionType, transactionDate, currentAvgCost } = req.body;
+
   const editStockQuery = `
     UPDATE stocks
     SET price = ${price}, quantity = ${quantity}, transactionType = '${transactionType}',
@@ -162,6 +163,21 @@ async function editStock(req, res) {
 
     if (userId !== holderIdRow[0].holderId) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
+    }
+
+    const [previousTrTypeRow] = await pool.query(`SELECT transactionType FROM stocks WHERE stockId = ${stockId}`);
+
+
+    // insert new realized return info
+    if (previousTrTypeRow[0].transactionType === 'buy' && transactionType === 'sell') {
+      await pool.query(`
+        INSERT INTO realizedStocks (stockId, avgCost)
+        VALUES (${stockId}, ${currentAvgCost})
+      `);
+    }
+    // delete realized return info
+    else if (previousTrTypeRow[0].transactionType === 'sell' && transactionType === 'buy') {
+      await pool.query(`DELETE FROM realizedStocks WHERE stockId = ${stockId}`);
     }
 
     await pool.query(editStockQuery);
@@ -187,8 +203,8 @@ async function deleteStock(req, res) {
       return res.status(403).json({ errorMsg: 'Wrong access: You cannot delete this stock info.' });
     }
 
-    await pool.query(`DELETE FROM stocks WHERE stockId = ${stockId}`);
     await pool.query(`DELETE FROM realizedStocks WHERE stockId = ${stockId}`);
+    await pool.query(`DELETE FROM stocks WHERE stockId = ${stockId}`);
 
     res.status(200).json({ successMsg: 'Successfully deleted the stock' });
   } catch (error) {
