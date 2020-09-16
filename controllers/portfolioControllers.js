@@ -207,7 +207,7 @@ async function selectPortfolio(req, res) {
     await pool.query(`DELETE FROM selectedPortfolio WHERE userId = ${userId}`);
     await pool.query(`INSERT INTO selectedPortfolio VALUES (${portfolioId}, ${userId})`);
 
-    return res.status(201).json({ successMsg: 'Successfully saved selected portfolio' });
+    return res.status(201).json({ selectedPortfolioId: portfolioId });
   } catch (error) {
     console.log(error)
     return res.status(500).json({ errorMsg: 'Internal Server Error' });
