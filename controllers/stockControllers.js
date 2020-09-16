@@ -129,7 +129,7 @@ async function addStock(req, res) {
 
     if (transactionType === 'sell') {
       const insertedStockId = addStockResult[0].insertId; // newly created stock row's id
-
+      console.log(insertedStockId, currentAvgCost);
       await pool.query(`
         INSERT INTO realizedStocks (stockId, avgCost)
         VALUES (${insertedStockId}, ${currentAvgCost})
