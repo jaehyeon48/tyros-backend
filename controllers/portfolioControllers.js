@@ -147,7 +147,7 @@ async function getRealizedStocks(req, res) {
 
   try {
     const [realizedStocks] = await pool.query(`
-      SELECT stocks.price, stocks.quantity, stocks.ticker, realizedStocks.avgCost
+      SELECT stocks.stockId, stocks.price, stocks.quantity, stocks.ticker, realizedStocks.avgCost
       FROM stocks
         INNER JOIN users
           ON stocks.holderId = ${userId} AND stocks.holderId = users.userId 
