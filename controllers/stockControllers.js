@@ -107,7 +107,7 @@ async function getCompanyInfo(req, res) {
 // @ACCESS        Private
 async function addStock(req, res) {
   const userId = req.user.id;
-  const { portfolioId, ticker, companyName, price, quantity, referCash, transactionType, transactionDate } = req.body;
+  const { portfolioId, ticker, companyName, price, quantity, referCash, currentAvgCost, transactionType, transactionDate } = req.body;
 
   try {
     if (referCash) {
@@ -120,12 +120,21 @@ async function addStock(req, res) {
         await pool.query(`INSERT INTO cash (holderId, portfolioId, amount, transactionType, transactionDate) VALUES (${userId}, ${portfolioId}, ${cashToDeposit}, 'deposit', '${transactionDate}')`);
       }
     }
-    await pool.query(`
+    const addStockResult = await pool.query(`
       INSERT INTO 
       stocks (holderId, portfolioId, ticker, companyName, price, 
         quantity, transactionType, transactionDate)
       VALUES (${userId}, ${portfolioId}, '${ticker}', '${companyName}', 
         ${price}, ${quantity}, '${transactionType}', '${transactionDate}')`);
+
+    if (transactionType === 'sell') {
+      const insertedStockId = addStockResult[0].insertId; // newly created stock row's id
+
+      await pool.query(`
+        INSERT INTO realizedStocks (stockId, avgCost)
+        VALUES (${insertedStockId}, ${currentAvgCost})
+      `);
+    }
 
     return res.status(201).json({ successMsg: 'Stock successfully added.' });
   } catch (error) {

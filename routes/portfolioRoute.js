@@ -7,6 +7,7 @@ const {
   getSelectedPortfolio,
   getPortfolioCash,
   getStockInfoByTickerGroup,
+  getRealizedStocks,
   createPortfolio,
   selectPortfolio,
   editPortfolioName,
@@ -22,28 +23,34 @@ const authMiddleware = require('../middlewares/authMiddleware');
 router.get('/', authMiddleware, getPortfolios);
 
 
-// @ROUTE         GET api/portfolio/:portfolioId/stocks
+// @ROUTE         GET api/portfolio/stocks/:portfolioId
 // @DESCRIPTION   Get Portfolio's stocks
 // @ACCESS        Private
-router.get('/:portfolioId/stocks', authMiddleware, getPortfolioStocks);
+router.get('/stocks/:portfolioId', authMiddleware, getPortfolioStocks);
 
 
-// @ROUTE         GET api/portfolio/:portfolioId/cash
+// @ROUTE         GET api/portfolio/cash/:portfolioId
 // @DESCRIPTION   Get Portfolio's cash
 // @ACCESS        Private
-router.get('/:portfolioId/cash', authMiddleware, getPortfolioCash);
+router.get('/cash/:portfolioId', authMiddleware, getPortfolioCash);
 
 
-// @ROUTE         GET api/portfolio/:portfolioId/:tickerName
+// @ROUTE         GET api/portfolio/group/:portfolioId/:tickerName
 // @DESCRIPTION   Get Information of the Ticker Group in the portfolio
 // @ACCESS        Private
-router.get('/:portfolioId/:tickerName', authMiddleware, getStockInfoByTickerGroup);
+router.get('/group/:portfolioId/:tickerName', authMiddleware, getStockInfoByTickerGroup);
 
 
 // @ROUTE         GET api/portfolio/select
 // @DESCRIPTION   Fetch selected portfolio
 // @ACCESS        Private
 router.get('/select', authMiddleware, getSelectedPortfolio);
+
+
+// @ROUTE         GET api/portfolio/realized/:portfolioId
+// @DESCRIPTION   Get All Realized stock's info
+// @ACCESS        Private
+router.get('/realized/:portfolioId', authMiddleware, getRealizedStocks);
 
 
 // @ROUTE         POST api/portfolio

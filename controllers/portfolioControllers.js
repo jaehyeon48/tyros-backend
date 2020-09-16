@@ -138,6 +138,33 @@ async function getSelectedPortfolio(req, res) {
 }
 
 
+// @ROUTE         GET api/portfolio/realized/:portfolioId
+// @DESCRIPTION   Get All Realized stock's info
+// @ACCESS        Private
+async function getRealizedStocks(req, res) {
+  const userId = req.user.id;
+  const portfolioId = req.params.portfolioId;
+
+  try {
+    const [realizedStocks] = await pool.query(`
+      SELECT stocks.price, stocks.ticker, realizedStocks.avgCost
+      FROM stocks
+        INNER JOIN users
+          ON stocks.holderId = ${userId} AND stocks.holderId = users.userId 
+        INNER JOIN portfolios
+          ON stocks.portfolioId = ${portfolioId} AND stocks.portfolioId = portfolios.portfolioId
+        INNER JOIN realizedStocks
+          ON stocks.stockId = realizedStocks.stockId
+        ORDER BY ticker asc;
+    `);
+    return res.status(200).json(realizedStocks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errorMsg: 'Internal Server Error' });
+  }
+}
+
+
 // @ROUTE         POST api/portfolio
 // @DESCRIPTION   Create New Portfolio
 // @ACCESS        Private
@@ -240,6 +267,7 @@ async function deletePortfolio(req, res) {
     await pool.query(`DELETE FROM stocks WHERE portfolioId = ${portfolioId}`);
     await pool.query(`DELETE FROM portfolios WHERE portfolioId = ${portfolioId}`);
 
+
     // if the portfolio is selected one, select another portfolio if there exists other portfolios.
     if (isSelectedOne[0]) {
       const [userPortfolioRow] = await pool.query(`SELECT portfolioId FROM portfolios WHERE ownerId = ${userId}`);
@@ -262,6 +290,7 @@ module.exports = {
   getSelectedPortfolio,
   getPortfolioCash,
   getStockInfoByTickerGroup,
+  getRealizedStocks,
   selectPortfolio,
   createPortfolio,
   editPortfolioName,
